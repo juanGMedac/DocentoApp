@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* Dark mode basado en clase .dark en <html> (strategy: selector) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ═══════════════════════════════════════════════════════════════════
+   DocentoApp — Design System (Paleta corporativa Davante)
+   Dark mode: basado en clase .dark en <html>
+   ═══════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Primary: Azul corporativo Davante ── */
+  --color-primary-50: #F5F8FF;
+  --color-primary-100: #EAF0FF;
+  --color-primary-200: #C8D9FF;
+  --color-primary-300: #8FB3FF;
+  --color-primary-400: #4D7FE8;
+  --color-primary-500: #174FD4;
+  --color-primary-600: #0D3FC0;
+  --color-primary-700: #0234AB;
+  --color-primary-800: #002782;
+  --color-primary-900: #001B5E;
+
+  /* ── Accent: Cyan claro para estados activos ── */
+  --color-accent-50: #ECFEFF;
+  --color-accent-100: #CFFAFE;
+  --color-accent-200: #A5F3FC;
+  --color-accent-300: #67E8F9;
+  --color-accent-400: #22D3EE;
+  --color-accent-500: #06B6D4;
+  --color-accent-600: #0891B2;
+  --color-accent-700: #0E7490;
+
+  /* ── Secondary: Coral Davante (acentos cálidos) ── */
+  --color-coral-100: #FFEEEC;
+  --color-coral-300: #FF8160;
+  --color-coral-500: #FF5B41;
+
+  /* ── Neutrals ── */
+  --color-surface-50: #FAFAFA;
+  --color-surface-100: #F5F5F5;
+  --color-surface-200: #EDEDED;
+  --color-surface-300: #E0E0E0;
+  --color-surface-400: #BDBDBD;
+  --color-surface-500: #9E9E9E;
+  --color-surface-600: #757575;
+  --color-surface-700: #5E5454;
+  --color-surface-800: #393939;
+  --color-surface-850: #2A2A2A;
+  --color-surface-900: #1A1A2E;
+  --color-surface-950: #111127;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Base layer — resets y defaults para light/dark
+   ═══════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  html {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-surface-700 transition-colors duration-300;
+  }
+
+  .dark body {
+    @apply bg-surface-950 text-surface-200;
+  }
+}
