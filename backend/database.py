@@ -1,33 +1,33 @@
 import os
-from dotenv import load_dotenv
+import urllib.parse
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Cargar variables de entorno desde el archivo .env
-load_dotenv()
+# Tus credenciales exactas
+DB_USER = "ADMIN"
+DB_PASSWORD = "***REDACTED***"
 
-DB_USER = os.getenv("DB_USER", "admin")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_DSN = os.getenv("DB_DSN", "localhost:1521/XEPDB1")
-WALLET_LOCATION = os.getenv("WALLET_LOCATION")
-WALLET_PASSWORD = os.getenv("WALLET_PASSWORD")
+# 1. Escapamos los caracteres especiales de tu contraseña (la @)
+DB_PASSWORD_ESCAPED = urllib.parse.quote_plus(DB_PASSWORD)
 
-# Configuración para Oracle Database utilizando el driver python-oracledb
-# Formato típico: oracle+oracledb://usuario:password@dsn
-SQLALCHEMY_DATABASE_URL = f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_DSN}"
+# 2. Tu cadena de conexión "Bajo" (TLS sin Wallet) extraída de tu Oracle Live
+ORACLE_CONNECT_STRING = (
+    "(description= "
+    "(retry_count=20)(retry_delay=3)"
+    "(address=(protocol=tcps)(port=1522)(host=adb.eu-madrid-1.oraclecloud.com))"
+    "(connect_data=(service_name=g8780a88b7b31da_docentoapp_low.adb.oraclecloud.com))"
+    "(security=(ssl_server_dn_match=yes)))"
+)
 
-# Configuración adicional de conexión para mTLS con Wallet
-connect_args = {}
-if WALLET_LOCATION and WALLET_PASSWORD:
-    connect_args = {
-        "wallet_location": WALLET_LOCATION,
-        "wallet_password": WALLET_PASSWORD
-    }
+# 3. Construimos la URL base para SQLAlchemy (solo usuario y contraseña)
+SQLALCHEMY_DATABASE_URL = f"oracle+oracledb://{DB_USER}:{DB_PASSWORD_ESCAPED}@"
 
+# 4. Creamos el motor pasándole la cadena bajo el nombre correcto 'dsn'
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args=connect_args,
+    connect_args={
+        "dsn": ORACLE_CONNECT_STRING
+    }
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
