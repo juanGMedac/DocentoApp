@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import grupos
+from routers import grupos, modulos, alumnos
 
 app = FastAPI(
     title="DocentoApp Backend",
@@ -18,6 +18,8 @@ app.add_middleware(
 )
 
 app.include_router(grupos.router)
+app.include_router(modulos.router)
+app.include_router(alumnos.router)
 
 @app.get("/api/status")
 def status():

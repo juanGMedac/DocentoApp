@@ -14,7 +14,7 @@ class AlumnoCreate(AlumnoBase):
 
 class AlumnoResponse(AlumnoBase):
     id: int
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 # ======== Esquemas de Grupos ========
@@ -35,5 +35,26 @@ class GrupoCreate(GrupoBase):
 class GrupoResponse(GrupoBase):
     id: int
     alumnos: List[AlumnoResponse] = []
-    
+
     model_config = ConfigDict(from_attributes=True)
+
+# ======== Esquemas de Modulos FP ========
+
+class ModuloFPBase(BaseModel):
+    codigo: str
+    nombre: str
+    id_profesor: str
+
+class ModuloFPCreate(ModuloFPBase):
+    pass
+
+class ModuloFPResponse(ModuloFPBase):
+    id: int
+    alumnos: List[AlumnoResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+# ======== Esquemas de Matriculas ========
+
+class MatriculaMasivaRequest(BaseModel):
+    ids_alumno: List[int]

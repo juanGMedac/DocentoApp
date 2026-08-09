@@ -47,3 +47,5 @@ venv/
 
 # Variables de entorno (¡Muy importante para proteger tus credenciales y el Wallet de Oracle!)
 .env
+
+__pycache__/
