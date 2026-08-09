@@ -20,6 +20,7 @@ class Grupo(Base):
     nombre = Column(String, nullable=False)
     ciclo = Column(String, nullable=False)
     curso = Column(String, nullable=False)
+    color = Column(String, nullable=True, default='bg-blue-600')
     
     # Relaciones
     profesor = relationship("Profesor", back_populates="grupos")

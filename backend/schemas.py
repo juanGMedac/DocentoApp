@@ -24,6 +24,10 @@ class GrupoBase(BaseModel):
     nombre: str
     ciclo: str
     curso: str
+    color: Optional[str] = 'bg-blue-600'
+
+class GrupoUpdateColor(BaseModel):
+    color: str
 
 class GrupoCreate(GrupoBase):
     pass

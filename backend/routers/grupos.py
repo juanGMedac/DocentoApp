@@ -59,3 +59,14 @@ def delete_grupo(grupo_id: int, db: Session = Depends(get_db)):
     db.delete(grupo)
     db.commit()
     return None
+
+@router.patch("/{grupo_id}/color", response_model=schemas.GrupoResponse)
+def update_grupo_color(grupo_id: int, payload: schemas.GrupoUpdateColor, db: Session = Depends(get_db)):
+    grupo = db.query(models.Grupo).filter(models.Grupo.id == grupo_id).first()
+    if not grupo:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Grupo no encontrado")
+    
+    grupo.color = payload.color
+    db.commit()
+    db.refresh(grupo)
+    return grupo

@@ -1,8 +1,18 @@
 <div class="flex h-screen w-full bg-surface-50 dark:bg-surface-950 transition-colors duration-300 font-sans">
 
-  <!-- ═══ Sidebar Lateral (Fijo, Fondo Oscuro) ═══ -->
-  <aside class="w-64 h-screen bg-surface-900 text-white flex flex-col flex-shrink-0 transition-colors duration-300">
-    
+  <!-- ═══ Botón Hamburguesa Flotante (solo móvil) ═══ -->
+  <button (click)="toggleMobileMenu()" class="fixed top-6 left-6 z-50 p-2.5 bg-slate-900 dark:bg-slate-800 text-white rounded-lg shadow-xl md:hidden hover:bg-slate-700 transition-colors">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- ═══ Overlay Fondo Oscuro (solo móvil) ═══ -->
+  <div *ngIf="isMobileMenuOpen" class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden" (click)="toggleMobileMenu()"></div>
+
+  <!-- ═══ Sidebar Lateral (off-canvas en móvil, fijo en escritorio) ═══ -->
+  <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0"
+         [ngClass]="{'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}">
     <!-- Logo & Brand -->
     <div class="h-20 flex items-center px-6 border-b border-surface-800 shrink-0">
       <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30 mr-3">
@@ -72,26 +82,40 @@
     <div class="max-w-6xl w-full mx-auto p-8 sm:p-12">
       
       <!-- Saludo / Header -->
-      @if (authService.user$ | async; as user) {
-        <div class="flex items-center gap-5 mb-12">
-          @if (user.photoURL) {
-            <img [src]="user.photoURL" alt="Avatar" class="w-16 h-16 rounded-full ring-4 ring-primary-500/20" />
+      <div class="flex items-center justify-between mb-12">
+        <div class="flex items-center gap-5">
+          @if (authService.user$ | async; as user) {
+            @if (user.photoURL) {
+              <img [src]="user.photoURL" alt="Avatar" class="w-16 h-16 rounded-full ring-4 ring-primary-500/20" />
+            } @else {
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                {{ (user.displayName || user.email || '?')[0] | uppercase }}
+              </div>
+            }
+            <div>
+              <h1 class="text-3xl font-bold text-surface-900 dark:text-white tracking-tight">¡Bienvenido, {{ user.displayName || 'Juan García Martín' }}!</h1>
+              <p class="text-surface-500 dark:text-surface-400 mt-1">{{ user.email }}</p>
+            </div>
           } @else {
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-              {{ (user.displayName || user.email || '?')[0] | uppercase }}
+            <div>
+              <h1 class="text-3xl font-bold text-surface-900 dark:text-white tracking-tight">¡Bienvenido, Juan García Martín!</h1>
+              <p class="text-surface-500 dark:text-surface-400 mt-1">Panel de control docente</p>
             </div>
           }
-          <div>
-            <h1 class="text-3xl font-bold text-surface-900 dark:text-white tracking-tight">¡Bienvenido, {{ user.displayName || 'Juan García Martín' }}!</h1>
-            <p class="text-surface-500 dark:text-surface-400 mt-1">{{ user.email }}</p>
-          </div>
         </div>
-      } @else {
-        <div class="mb-12">
-          <h1 class="text-3xl font-bold text-surface-900 dark:text-white tracking-tight">¡Bienvenido, Juan García Martín!</h1>
-          <p class="text-surface-500 dark:text-surface-400 mt-1">Panel de control docente</p>
-        </div>
-      }
+
+        <!-- Botón Modo Oscuro -->
+        <button (click)="toggleDarkMode()" class="p-3 rounded-xl bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300 hover:bg-surface-300 dark:hover:bg-surface-600 transition-colors">
+          <svg *ngIf="!isDarkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Moon icon -->
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <svg *ngIf="isDarkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Sun icon -->
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </button>
+      </div>
 
       <!-- Contadores Limpios -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -135,6 +159,49 @@
           <h3 class="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400">12</h3>
         </div>
 
+      </div>
+
+      <!-- Listado de Grupos -->
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold text-surface-900 dark:text-white mb-6">Mis Grupos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (grupo of grupos; track grupo.id) {
+            <article class="group relative flex flex-col bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out cursor-pointer overflow-hidden">
+              <div class="absolute top-0 left-0 w-full h-2 group-hover:h-3 transition-all duration-300" [ngClass]="grupo.color || 'bg-blue-600'"></div>
+              
+              <div class="flex-1 flex flex-col mt-2">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ grupo.nombre }}</h3>
+                  <button (click)="cambiarColor(grupo); $event.stopPropagation()" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Cambiar color">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="flex items-center gap-1.5 mb-4 text-sm text-slate-500 dark:text-slate-400">
+                  <span>{{ grupo.ciclo }}</span>
+                  <span class="text-slate-300 dark:text-slate-600">·</span>
+                  <span>{{ grupo.curso }}</span>
+                </div>
+                
+                <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span>{{ grupo.alumnos?.length || 0 }} Alumnos</span>
+                  </div>
+                  <button class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver detalles</button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <div class="col-span-full py-12 text-center bg-surface-50 dark:bg-surface-800 rounded-2xl border border-dashed border-surface-300 dark:border-surface-600">
+              <p class="text-surface-500 dark:text-surface-400">No tienes grupos asignados.</p>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Alerta / Tarjeta extra inferior -->
